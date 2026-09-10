@@ -1,23 +1,53 @@
-project:
-  name: EcoRiskAI
-  region: Sierra Nevada
-
-dates:
-  start: "2015-01-01"
-  end: "2024-12-31"
-
-imagery:
-  frequency: monthly
-  cloud_cover: 20
-
-tile:
-  size: 256
-
-training:
-  test_size: 0.2
-  random_seed: 42
-
 paths:
-  raw: data/raw
-  processed: data/processed
-  outputs: outputs
+  yearly_exports_dir: data/raw/ml/yearly_exports
+  merged_csv: data/processed/merged/ecoriskai_master_2020_2026.csv
+  clean_features_csv: data/processed/feature_tables/ecoriskai_features_clean.csv
+  model_path: models/xgboost_ecorisk.pkl
+  metrics_path: outputs/metrics/baseline_metrics.json
+  predictions_csv: outputs/predictions/ecorisk_predictions.csv
+  # Full-landscape (every grid cell) inputs/outputs for Phase 3. Optional: the
+  # pipeline scores these only when the wall-to-wall features CSV is present.
+  landscape_features_csv: data/processed/feature_tables/ecoriskai_landscape_features.csv
+  landscape_predictions_csv: outputs/predictions/ecorisk_landscape_predictions.csv
+  # Optional reference: grid_id -> owner (USFS, private, TNC, ...). When present,
+  # ownership shows in the prioritization panel (Phase 4). Absent by default.
+  land_ownership_csv: data/reference/land_ownership.csv
+
+grid:
+  # Sierra Nevada study-area grid spacing in degrees (~2 km). Used to draw the
+  # map risk surface and to build the full-coverage extraction grid.
+  cell_size_degrees: 0.017966
+  aoi_min_lat: 35.9
+  aoi_max_lat: 39.2
+  aoi_min_lon: -120.9
+  aoi_max_lon: -118.2
+
+data:
+  training_years:
+    - 2020
+    - 2021
+    - 2022
+    - 2023
+  prediction_years:
+    - 2024
+    - 2025
+    - 2026
+  invalid_value: -9999
+
+labeling:
+  # Forest loss recorded this many years after the observation counts as risk.
+  lookahead_years: 1
+  # Only count loss associated with a burn signal, so timber-harvest loss does
+  # not pollute a wildfire-risk model (TNC check-in, Jul 2026).
+  fire_scoped: true
+  # Feed "month before" lag features to the model. Off by default: the current
+  # monthly export is too sparse for good coverage. Turn on after Phase 3
+  # (dense Earth Engine extraction) makes prior-month observations available.
+  use_prior_month_features: false
+  # Product cadence. Annual is realistic to maintain; monthly needs a much
+  # heavier data pipeline.
+  update_cadence: annual
+
+model:
+  random_state: 42
+  test_size: 0.2

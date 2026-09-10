@@ -1,16 +1,27 @@
+# Python
 __pycache__/
+*.py[cod]
 *.pyc
-
+*.pyc.*
+*.egg-info/
 .venv/
 venv/
 
-.env
+# Claude Code local config
+.claude/
 
-models/
+# OS / editor
+.DS_Store
+Thumbs.db
 
-data/raw/
-data/processed/
+# Large raw data and binaries — not for version control (too big / not source)
+data/raw/ml/*.exe
+data/raw/ml/*.winmd
+data/raw/labels/
+data/raw/landsat/
+*.tif
+*.tiff
+*.exe
 
-outputs/
-
-.ipynb_checkpoints/
+# Streamlit secrets (keep .streamlit/config.toml)
+.streamlit/secrets.toml
